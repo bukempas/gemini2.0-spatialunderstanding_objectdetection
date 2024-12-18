@@ -26,4 +26,13 @@ The script performs the following actions:
   ![image](https://github.com/user-attachments/assets/fd4755d4-9cc6-4356-9da6-03ad88a947b8)
 
 
+  For details go to : https://github.com/google-gemini/cookbook/tree/main/gemini-2
+  
+  https://github.com/google-gemini/cookbook/blob/main/gemini-2/spatial_understanding.ipynb
+
+  https://www.kaggle.com/datasets/sukmaadhiwijaya/weld-quality-inspection-instance-segmentation
+
+  
+
+
 
