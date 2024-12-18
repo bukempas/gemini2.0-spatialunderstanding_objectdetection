@@ -22,4 +22,7 @@ The script performs the following actions:
 *   **Font Customization:** Attempts to load the Arial font for clearer text labels and falls back to a default font if Arial is not found.
 *   **Easy-to-Understand Code:** The code is well-commented, making it easy to follow and modify.
 
+  ![image](https://github.com/user-attachments/assets/fd4755d4-9cc6-4356-9da6-03ad88a947b8)
+
+
 
