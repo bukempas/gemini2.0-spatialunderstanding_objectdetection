@@ -4,6 +4,7 @@ This project demonstrates object detection in images using Google's Gemini 2.0 s
 The example is made for detecting a weld quality inspection with Gemini 2.0 spatial understanding.
 
 ## VertexAISprint
+#VertexAISprint 
 "Google Cloud credits are provided for this project." 
 
 
