@@ -3,6 +3,10 @@
 This project demonstrates object detection in images using Google's Gemini 2.0 spatial understanding. The code identifies objects within an image, draws bounding boxes around them, and labels them with their detected names.
 The example is made for detecting a weld quality inspection with Gemini 2.0 spatial understanding.
 
+## VertexAISprint
+"Google Cloud credits are provided for this project." 
+
+
 ## Overview
 
 The script performs the following actions:
