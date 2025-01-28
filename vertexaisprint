@@ -1,0 +1,126 @@
+pip install -U -q google-genai
+
+from google import genai
+
+client = genai.Client(
+    vertexai=True, project='your_project_id', location='your_location'
+)
+
+model_name = "gemini-2.0-flash-exp"
+
+from PIL import Image
+import json
+
+def parse_json(json_output):
+    """Parses JSON from a string, removing potential markdown code block formatting.
+
+    Args:
+        json_output: The string potentially containing JSON data.
+
+    Returns:
+        A string containing the parsed JSON content, or an empty string if no valid JSON is found.
+    """
+    lines = json_output.splitlines()
+    json_content = ""
+    in_json_block = False
+
+    for line in lines:
+        if line.strip() == "```json":
+            in_json_block = True
+        elif line.strip() == "```" and in_json_block:
+            break  # End of JSON block
+        elif in_json_block:
+            json_content += line + "\n"
+
+    return json_content.strip()
+
+from google.cloud import storage
+
+# Your project ID (replace with your actual project ID)
+project_id = "project_id" #You should replace this with your project ID
+
+# GCS bucket and blob path
+bucket_name = "gcs_dataset"  # Extract bucket name from GCS URI
+blob_name = "your_img.jpg" # Extract blob name from GCS URI
+
+# Create a storage client
+storage_client = storage.Client(project=project_id)
+
+# Get the blob
+bucket = storage_client.bucket(bucket_name)
+blob = bucket.blob(blob_name)
+
+# Download the blob to a temporary file
+temp_file_name = "/tmp/your_img.jpg" # Use a temporary location
+blob.download_to_filename(temp_file_name)
+
+# Open the downloaded image using PIL
+img = Image.open(temp_file_name)
+
+# Optional resizing, take attention the image resolution for detection
+max_size = 1200
+if img.width > max_size or img.height > max_size:
+    img.thumbnail((max_size, max_size))
+width, height = img.size
+
+# Craft the prompt
+prompt = """You are an expert of manufacturing quality Detect the quality problems, if there is any, in the image of manufactured product and provide bounding box information in JSON format. The output should be a single, complete JSON string and nothing else. Do not include any text other than the JSON string.
+
+The JSON output should include:
+
+*   object_name: The name of the detected object.
+*   bounding_box: A list containing the coordinates [ymin, xmin, ymax, xmax] of the bounding box just on the object in pixel values.
+
+Example JSON structure:
+
+[
+    {
+        "object_name": "cat",
+        "bounding_box": [10, 20, 150, 200]
+    },
+    {
+        "object_name": "dog",
+        "bounding_box": [200, 100, 350, 300]
+    }
+]
+"""
+
+#Generate Content and Handle Response
+response = client.models.generate_content(
+    model=model_name,
+    contents=[prompt, img])
+print(response.text)
+
+from PIL import Image, ImageDraw, ImageFont
+#Robust JSON Handling with parse_json function
+raw_response = response.text
+parsed_json_string = parse_json(raw_response)
+
+if not parsed_json_string:
+    print("Model returned an empty or incomplete JSON response.")
+    print(f"Raw response text: {raw_response}")
+    spatial_info = []
+    # Consider retrying with a modified prompt here if needed
+else:
+    try:
+        spatial_info = json.loads(parsed_json_string)
+        print(spatial_info)
+    except json.JSONDecodeError as e:
+        print(f"Error parsing JSON: {e}")
+        print(f"Raw response text: {raw_response}")
+        print(f"Parsed JSON string: {parsed_json_string}")
+        spatial_info = []  # Handle the error, set to empty list
+
+# Draw Bounding Boxes (if successful)
+draw = ImageDraw.Draw(img)
+for obj in spatial_info:
+    object_name = obj["object_name"]
+    if obj["bounding_box"]:
+        ymin, xmin, ymax, xmax = obj["bounding_box"]
+        draw.rectangle([(xmin, ymin), (xmax, ymax)], outline="blue", width=5)
+        # Draw text with the specified font
+        draw.text((xmin, ymin - 10), object_name, fill="red")
+
+# Display Images
+display(img)
+
