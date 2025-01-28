@@ -123,8 +123,9 @@ for obj in spatial_info:
         # Draw text with the specified font
         draw.text((xmin, ymin - 10), object_name, fill="red")
 
-"Google Cloud credits are provided for this project." 
-
 # Display Images
 display(img)
+
+
+"Google Cloud credits are provided for this project." 
 
