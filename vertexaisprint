@@ -1,3 +1,5 @@
+#VertexAISprint
+
 pip install -U -q google-genai
 
 from google import genai
@@ -120,6 +122,8 @@ for obj in spatial_info:
         draw.rectangle([(xmin, ymin), (xmax, ymax)], outline="blue", width=5)
         # Draw text with the specified font
         draw.text((xmin, ymin - 10), object_name, fill="red")
+
+"Google Cloud credits are provided for this project." 
 
 # Display Images
 display(img)
